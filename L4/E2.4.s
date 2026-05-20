@@ -2,6 +2,7 @@
 .equ BACKGROUND_COLOR, 0x0
 
 .data
+Score: .byte 0
 x: .word 3
 rlocation: .zero 40
 location: .word 0, 0 # (x,y)
@@ -357,6 +358,7 @@ FruitCheck:
  la t1,location
  lw,t5,x
  li t4,0 
+ la t6,Score
 FruitCheck_Loop:
  lw t2,0(a0)
  lw t3,0(t1)
@@ -367,16 +369,28 @@ FruitCheck_Loop:
  lw t3,4(t1)
  bne t2,t3,FruitCheck_EndLoop
  
- addi sp,sp,-8
+ addi sp,sp,-16
  sd ra,0(sp)
+ sd a0,8(sp)
  
  jal GenerateDot
+ lb a0,0(t6)
+ addi a0,a0,1
+ sb a0,0(t6)
+ jal PrintInt
  
+ 
+ ld a0,8(sp)
  ld ra,0(sp)
- addi sp,sp,8
+ addi sp,sp,16
  ret
 FruitCheck_EndLoop:
  addi a0,a0,8
  addi t4,t4,1
  blt t4,t5,FruitCheck_Loop
  ret 
+PrintInt:
+ 
+ li a7,1
+ ecall
+ ret
